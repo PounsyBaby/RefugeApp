@@ -1,0 +1,11 @@
+{
+  "watch": [
+    "dist-electron"
+  ],
+  "ext": "js",
+  "ignore": [
+    "dist-electron/**/*.map"
+  ],
+  "exec": "electron .",
+  "delay": "1200ms"
+}
