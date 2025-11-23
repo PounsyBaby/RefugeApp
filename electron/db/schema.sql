@@ -588,3 +588,294 @@ WHERE ad.statut = 'brouillon';
 INSERT INTO utilisateur (nom, prenom, email, motdepasse_hash, role, actif)
 VALUES ('Admin', 'Test', 'admin@test.com', '123456', 'admin', 1)
 ON DUPLICATE KEY UPDATE motdepasse_hash = VALUES(motdepasse_hash), actif = VALUES(actif);
+
+/* ============================
+   DONNÉES DE RÉFÉRENCE
+   ============================ */
+
+-- Espèces
+INSERT INTO espece (id_espece, libelle) VALUES
+  (1, 'Chien'),
+  (2, 'Chat');
+
+-- Races de chiens
+INSERT INTO race (id_race, id_espece, libelle) VALUES
+  (1, 1, 'Berger Belge'),
+  (2, 1, 'Berger Allemand'),
+  (3, 1, 'Labrador Retriever'),
+  (4, 1, 'Golden Retriever'),
+  (5, 1, 'Border Collie'),
+  (6, 1, 'Beagle'),
+  (7, 1, 'Husky Sibérien'),
+  (8, 1, 'Staffordshire Bull Terrier'),
+  (9, 1, 'Chihuahua'),
+  (10, 1, 'Shih Tzu');
+
+-- Races de chats
+INSERT INTO race (id_race, id_espece, libelle) VALUES
+  (11, 2, 'Européen'),
+  (12, 2, 'Siamois'),
+  (13, 2, 'Maine Coon'),
+  (14, 2, 'British Shorthair'),
+  (15, 2, 'Bengal'),
+  (16, 2, 'Ragdoll'),
+  (17, 2, 'Persan'),
+  (18, 2, 'Sphynx');
+
+
+/* ============================
+   PERSONNES (adoptants, FA...)
+   ============================ */
+
+INSERT INTO personne
+(id_personne, nom, prenom, email, tel, date_naissance, jardin,
+ rue, numero, code_postal, ville, pays, type_personne)
+VALUES
+  (1, 'Dupont', 'Jean', 'jean.dupont@example.com', '0470/11.22.33',
+   '1990-05-10', 1, 'Rue des Lilas', '12', '6000', 'Charleroi', 'Belgique', 'adoptant'),
+
+  (2, 'Martin', 'Sophie', 'sophie.martin@example.com', '0471/22.33.44',
+   '1988-09-22', 1, 'Avenue des Rosiers', '5', '1190', 'Bruxelles', 'Belgique', 'adoptant'),
+
+  (3, 'Leroy', 'Thomas', 'thomas.leroy@example.com', '0472/33.44.55',
+   '1992-01-15', 1, 'Rue du Parc', '27', '6040', 'Jumet', 'Belgique', 'fa'),
+
+  (4, 'Durand', 'Claire', 'claire.durand@example.com', '0473/44.55.66',
+   '1985-07-03', 0, 'Rue des Écoles', '3', '6530', 'Thuin', 'Belgique', 'multiple'),
+
+  (5, 'Lambert', 'Nicolas', 'nicolas.lambert@example.com', '0474/55.66.77',
+   '1995-03-30', 1, 'Chaussée de Mons', '210', '6030', 'Marchienne-au-Pont', 'Belgique', 'prospect'),
+
+  (6, 'Petit', 'Julie', 'julie.petit@example.com', '0475/66.77.88',
+   '1993-11-11', 0, 'Rue Haute', '8', '7000', 'Mons', 'Belgique', 'donateur'),
+
+  (7, 'Moreau', 'Alex', 'alex.moreau@example.com', '0476/77.88.99',
+   '1990-02-02', 1, 'Rue du Centre', '15', '5000', 'Namur', 'Belgique', 'adoptant'),
+
+  (8, 'Simon', 'Laura', 'laura.simon@example.com', '0477/88.99.00',
+   '1987-12-20', 1, 'Rue de la Gare', '9', '4100', 'Seraing', 'Belgique', 'fa');
+
+
+/* ============================
+   UTILISATEURS (staff refuge)
+   ============================ */
+
+-- Admin de test déjà créé dans ton script (id_user = 1)
+-- On ajoute quelques utilisateurs supplémentaires
+INSERT INTO utilisateur
+(id_user, nom, prenom, email, motdepasse_hash, role, actif)
+VALUES
+  (2, 'Agent', 'Refuge', 'agent@refuge.local', 'password', 'agent', 1),
+  (3, 'Benevole', 'Marie', 'marie.benevole@refuge.local', 'password', 'benevole', 1);
+
+
+/* ============================
+   VÉTÉRINAIRES
+   ============================ */
+
+INSERT INTO veterinaire (id_vet, nom_cabinet, contact, adresse) VALUES
+  (1, 'Clinique Vétérinaire du Centre', '071/12.34.56', 'Rue du Centre 45, 6000 Charleroi'),
+  (2, 'VetPlus', '02/123.45.67', 'Boulevard Royal 10, 1000 Bruxelles');
+
+
+/* ============================
+   EMPLACEMENTS
+   ============================ */
+
+INSERT INTO emplacement
+(id_emplacement, code, type, capacite, actif)
+VALUES
+  (1, 'Q1',   'Quarantaine', 5, 1),
+  (2, 'B1',   'Box Chien 1', 2, 1),
+  (3, 'B2',   'Box Chien 2', 2, 1),
+  (4, 'CH1',  'Chatterie',   8, 1);
+
+
+/* ============================
+   ANIMAUX
+   ============================ */
+
+INSERT INTO animal
+(id_animal, nom_usuel, id_espece, sexe, date_naissance, date_arrivee,
+ statut, couleur_robe, poids_kg, sterilise, date_sterilisation, microchip_no, description)
+VALUES
+  (1, 'Rex',   1, 'M', '2021-03-15', '2024-09-01',
+   'adoptable', 'marron', 22.50, 1, '2023-05-10', '900000000000001', 'Chien dynamique mais très sociable.'),
+
+  (2, 'Lola',  1, 'F', '2020-07-10', '2024-08-15',
+   'en_FA', 'noir et blanc', 18.30, 1, '2022-09-20', '900000000000002', 'Très douce, bonne avec les enfants.'),
+
+  (3, 'Oslo',  1, 'M', '2022-01-05', '2024-10-01',
+   'quarantaine', 'tricolore', 10.20, 0, NULL, '900000000000003', 'En observation sanitaire.'),
+
+  (4, 'Nala',  2, 'F', '2022-02-02', '2024-09-20',
+   'adoptable', 'tigré', 4.20, 0, NULL, '900000000000004', 'Chatte joueuse et curieuse.'),
+
+  (5, 'Moka',  2, 'F', '2023-03-10', '2024-10-15',
+   'soin', 'brown tabby', 3.10, 0, NULL, '900000000000005', 'En traitement pour légère infection.'),
+
+  (6, 'Snow',  1, 'M', '2019-11-11', '2024-07-01',
+   'arrive', 'blanc', 24.00, 1, '2022-01-15', '900000000000006', 'Chien calme, idéal première adoption.');
+
+
+-- Liens Animal / Race
+INSERT INTO animal_race (id_animal, id_race, pourcentage) VALUES
+  (1, 3, 100),   -- Rex : Labrador
+  (2, 4, 100),   -- Lola : Golden
+  (3, 5, 100),   -- Oslo : Border Collie
+  (4, 11, 100),  -- Nala : Européen
+  (5, 13, 100),  -- Moka : Maine Coon
+  (6, 2, 100);   -- Snow : Berger Allemand
+
+
+/* ============================
+   ENTRÉES ANIMAUX
+   ============================ */
+
+INSERT INTO entree
+(id_entree, id_animal, date_entree, type, source_personne, details)
+VALUES
+  (1, 1, '2024-09-01', 'abandon', 1, 'Changement de situation familiale.'),
+  (2, 2, '2024-08-15', 'abandon', 2, 'Manque de temps.'),
+  (3, 3, '2024-10-01', 'trouve', NULL, 'Trouvé sur la voie publique.'),
+  (4, 4, '2024-09-20', 'trouve', NULL, 'Chat errant sociable.'),
+  (5, 5, '2024-10-15', 'trouve', NULL, 'Déposé par un voisin.'),
+  (6, 6, '2024-07-01', 'abandon', 7, 'Déménagement à l\'étranger.');
+
+
+/* ============================
+   ANIMAL / EMPLACEMENTS
+   ============================ */
+
+INSERT INTO animal_emplacement
+(id_animal, id_emplacement, date_debut, date_fin)
+VALUES
+  (1, 2, '2024-09-01', NULL),       -- Rex en box B1
+  (2, 3, '2024-08-15', '2024-09-15'), -- Lola en box B2 puis FA
+  (3, 1, '2024-10-01', NULL),       -- Oslo en quarantaine
+  (4, 4, '2024-09-20', NULL),       -- Nala en chatterie
+  (5, 4, '2024-10-15', NULL);       -- Moka en chatterie
+
+
+/* ============================
+   FAMILLES D’ACCUEIL & PLACEMENTS
+   ============================ */
+
+INSERT INTO famille_accueil
+(id_fa, id_personne, date_agrement, statut, notes)
+VALUES
+  (1, 3, '2023-05-01', 'active', 'Grande maison avec jardin clôturé.'),
+  (2, 8, '2022-09-15', 'active', 'Appartement calme, habituée aux chiens.');
+
+-- Placement de Lola en FA (pas de chevauchement avec animal_emplacement)
+INSERT INTO placement_fa
+(id_placement, id_animal, id_fa, date_debut, date_fin, notes)
+VALUES
+  (1, 2, 1, '2024-09-16', NULL, 'Très bonne intégration dans la famille.');
+
+
+/* ============================
+   DEMANDES D’ADOPTION
+   ============================ */
+
+INSERT INTO demande_adoption
+(id_demande, id_personne, date_depot, statut, type_logement, jardin,
+ accord_proprio, enfants, autres_animaux, experience_animaux, preferences, commentaire)
+VALUES
+  (1, 1, '2024-10-01', 'en_etude', 'Maison 3 façades', 1, 1, 2,
+   '1 chat', 'A déjà eu un chien', 'Chien moyen, calme', 'Visite prévue ce mois-ci.'),
+
+  (2, 2, '2024-10-05', 'soumise', 'Appartement', 0, 1, 0,
+   'Aucun', 'Première adoption', 'Chat adulte', 'Préférence pour chatte câline.'),
+
+  (3, 7, '2024-10-10', 'soumise', 'Maison', 1, 1, 1,
+   '1 chien', 'Bonne expérience', 'Chien sportif', 'Projet de cani-randonnée.');
+
+
+INSERT INTO demande_animal (id_demande, id_animal, priorite) VALUES
+  (1, 1, 1),  -- Jean veut Rex
+  (2, 4, 1),  -- Sophie veut Nala
+  (3, 1, 1),  -- Alex veut Rex
+  (3, 3, 2);  -- en second choix Oslo
+
+
+/* ============================
+   VISITES DOMICILIAIRES & RDV
+   ============================ */
+
+INSERT INTO visite_domicile
+(id_visite, id_demande, date_visite, statut, id_user, notes)
+VALUES
+  (1, 1, '2024-10-15', 'favorable', 2, 'Maison adaptée, jardin bien clôturé.'),
+  (2, 2, '2024-10-18', 'conditionnel', 2, 'Balcon sécurisé à vérifier.');
+
+INSERT INTO rendez_vous
+(id_rdv, id_personne, id_animal, date_heure, type, statut, id_user, notes)
+VALUES
+  (1, 1, 1, '2024-10-12 14:00:00', 'rencontre', 'honore', 2, 'Bonne affinité avec Rex.'),
+  (2, 2, 4, '2024-10-20 11:00:00', 'rencontre', 'planifie', 2, 'Première rencontre avec Nala.');
+
+
+/* ============================
+   ADOPTION & PAIEMENT
+   ============================ */
+
+-- Adoption de Snow par Alex (id_personne = 7)
+INSERT INTO adoption
+(id_adoption, numero_contrat, id_animal, id_personne, date_contrat,
+ frais_total, statut, conditions_particulieres)
+VALUES
+  (1, 'CONTRAT-2024-0001', 6, 7, '2024-09-10',
+   180.00, 'finalisee', 'Contrôle post-adoption dans 3 mois.');
+
+-- Paiement complet
+INSERT INTO paiement
+(id_paiement, id_adoption, date_paiement, montant, mode, reference)
+VALUES
+  (1, 1, '2024-09-10', 180.00, 'carte', 'PAY-2024-0001');
+
+
+/* ============================
+   RÉSERVATION
+   ============================ */
+
+INSERT INTO reservation
+(id_reservation, id_animal, id_demande, date_debut, date_fin, statut, motif)
+VALUES
+  (1, 4, 2, '2024-10-21', NULL, 'active', 'En attente de validation définitive.');
+
+
+/* ============================
+   ÉVÉNEMENTS MÉDICAUX
+   ============================ */
+
+INSERT INTO evenement_medical
+(id_evt, id_animal, type, sous_type, date_evt, date_validite, id_veterinaire, notes)
+VALUES
+  (1, 1, 'vaccin', 'CHPPiL', '2024-09-05', '2025-09-05', 1, 'Vaccination annuelle.'),
+  (2, 4, 'vaccin', 'Typhus/Coriza', '2024-09-25', '2025-09-25', 2, 'Rappel OK.'),
+  (3, 5, 'traitement', 'Antibiotiques', '2024-10-18', '2024-11-01', 1, 'Suivi infection légère.');
+
+
+/* ============================
+   NOTES DE COMPORTEMENT
+   ============================ */
+
+INSERT INTO note_comportement
+(id_note, id_animal, date_note, ok_chiens, ok_chats, ok_enfants,
+ score, id_user, commentaire)
+VALUES
+  (1, 1, '2024-09-10', 1, 1, 1, 5, 2, 'Très sociable avec tout le monde.'),
+  (2, 2, '2024-09-20', 0, 1, 1, 4, 3, 'Un peu craintive avec les autres chiens.'),
+  (3, 4, '2024-09-25', 0, 1, 1, 5, 2, 'Adore les câlins, ok enfants.');
+
+
+/* ============================
+   DOCUMENTS
+   ============================ */
+
+INSERT INTO document
+(id_doc, id_animal, id_adoption, id_demande, type_doc, uri, date_doc)
+VALUES
+  (1, 6, 1, NULL, 'contrat_adoption', '/docs/contrats/CONTRAT-2024-0001.pdf', '2024-09-10'),
+  (2, 1, NULL, 1, 'formulaire_demande', '/docs/demandes/DEM-0001.pdf', '2024-10-01');

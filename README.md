@@ -9,11 +9,11 @@ Client lourd Electron + Vue 3 + TypeScript + MySQL. Application desktop pour gé
 ```bash
 git clone .../refugeapp
 cd refugeapp
-cp .env.example .env   # compléter les secrets et l’URL MySQL
+cp .env.exemple .env   # renseigner DATABASE_URL (et/ou MYSQL_*), JWT_SECRET...
 npm install            # installe les deps + prisma generate
-npm run db:setup       # crée le schéma
-npm run seed:admin     # crée l’admin de démo
-npm run seed:sample    # données d’exemple
+npm run db:setup       # crée le schéma + fixtures SQL incluses
+npm run seed:admin     # crée l’admin de démo (Prisma)
+npm run seed:sample    # petit jeu de données Prisma complémentaire
 npm run dev            # lance l’app Electron en watch
 ```
 
@@ -34,11 +34,12 @@ Modèle : `.env.example` → `.env`.
 
 | Variable                    | Description |
 | --------------------------- | ----------- |
-| `DATABASE_URL`              | URL Prisma `mysql://user:pass@host:port/db` |
+| `DATABASE_URL`              | URL Prisma `mysql://user:pass@host:port/db` (utilisée aussi par `db:setup` si présente) |
+| `MYSQL_HOST`/`MYSQL_PORT`/`MYSQL_USER`/`MYSQL_PASSWORD` | Optionnel : overrides pour `db:setup` si vous ne voulez pas exposer un mot de passe dans `DATABASE_URL` |
 | `JWT_SECRET`                | Secret JWT pour la session |
 | `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` | Identifiants de l’admin de démo |
 
-> Assurez-vous que la base MySQL ciblée existe et que l’utilisateur a les droits (CREATE/ALTER/INSERT).
+> `db:setup` utilise `DATABASE_URL` si présent (sinon `MYSQL_*`). Assurez-vous que l’utilisateur MySQL a les droits CREATE/ALTER/INSERT.
 
 ---
 
@@ -49,14 +50,15 @@ Modèle : `.env.example` → `.env`.
 | `npm run dev` | Démarre l’app via Electron Forge + Vite en watch |
 | `npm run build` / `npm run package` | Compile sans créer d’installeur (sorties dans `.vite/`) |
 | `npm run make` | Génère les artefacts (Squirrel/Zip/Deb/RPM) dans `out/` |
-| `npm run db:setup` | Applique le schéma SQL (Prisma) |
+| `npm run db:setup` | Recrée la base depuis `src/main/db/schema.sql` (drop + create + fixtures SQL) |
 | `npm run seed:admin` | Crée l’admin de démo |
-| `npm run seed:sample` | Données d’exemple (espèces, animaux…) |
+| `npm run seed:sample` | Données d’exemple Prisma supplémentaires |
 | `npm run prisma:generate` | Régénère le client Prisma (déjà fait en `postinstall`) |
 | `npm run lint` | ESLint |
 | `npm run test:smoke` | Vérifie qu’on peut créer/supprimer une demande d’adoption |
 
 Les scripts `seed:*` et `test:smoke` utilisent `ts-node` avec `tsconfig.node.json`.
+`db:setup` inclut déjà un jeu de données SQL (espèces, animaux, réservations, etc.). `seed:sample` ajoute un petit jeu Prisma différent (peut cohabiter).
 
 ---
 
