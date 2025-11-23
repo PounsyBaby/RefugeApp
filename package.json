@@ -2,21 +2,22 @@
   "name": "refuge-pro-vue",
   "version": "1.0.0",
   "sideEffects": [
-    "electron/ipc/*.ts"
+    "src/main/ipc/*.ts"
   ],
   "private": true,
-  "main": "dist-electron/main.js",
+  "main": ".vite/build/main.js",
   "description": "Refuge Animalier Pro - Electron + Vue 3 + TypeScript + MySQL",
   "scripts": {
-    "dev": "concurrently -k -n RENDERER,MAIN,ELECTRON -c yellow,blue,green \"npm:dev:renderer\" \"npm:dev:main\" \"npm:dev:electron\"",
-    "dev:renderer": "vite",
-    "dev:main": "tsup electron/main.ts electron/preload.ts electron/ipc/**/*.ts electron/security/**/*.ts electron/db/**/*.ts --format=cjs --outDir dist-electron --external electron --watch",
-    "dev:electron": "wait-on tcp:5173 && nodemon",
-    "build": "vite build && tsup electron/main.ts electron/preload.ts electron/ipc/**/*.ts electron/security/**/*.ts electron/db/**/*.ts --format=cjs --outDir dist-electron --external electron",
+    "start": "electron-forge start",
+    "dev": "electron-forge start",
+    "package": "electron-forge package",
+    "build": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
     "prisma:generate": "prisma generate",
-    "db:setup": "ts-node --project tsconfig.node.json ./electron/db/setup.ts",
-    "seed:admin": "ts-node --project tsconfig.node.json ./electron/db/seed-admin.ts",
-    "seed:sample": "ts-node --project tsconfig.node.json ./electron/db/seed-sample.ts",
+    "db:setup": "ts-node --project tsconfig.node.json ./src/main/db/setup.ts",
+    "seed:admin": "ts-node --project tsconfig.node.json ./src/main/db/seed-admin.ts",
+    "seed:sample": "ts-node --project tsconfig.node.json ./src/main/db/seed-sample.ts",
     "test:smoke": "ts-node --project tsconfig.node.json ./scripts/smoke-test.ts",
     "lint": "eslint .",
     "postinstall": "prisma generate"
@@ -26,23 +27,27 @@
     "argon2": "^0.41.1",
     "dotenv": "^16.4.5",
     "electron-log": "^5.2.2",
+    "electron-squirrel-startup": "^1.0.1",
     "mime-types": "^3.0.1",
     "mysql2": "^3.15.2",
     "vue": "^3.5.12",
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@electron-forge/cli": "^7.8.3",
+    "@electron-forge/maker-deb": "^7.9.0",
+    "@electron-forge/maker-rpm": "^7.9.0",
+    "@electron-forge/maker-squirrel": "^7.9.0",
+    "@electron-forge/maker-zip": "^7.9.0",
+    "@electron-forge/plugin-vite": "^7.9.0",
+    "@types/electron-squirrel-startup": "^1.0.2",
     "@types/node": "^20.14.12",
     "@vitejs/plugin-vue": "^5.2.4",
-    "concurrently": "^8.2.2",
     "electron": "^38.2.2",
     "eslint": "^9.10.0",
-    "nodemon": "^3.1.4",
     "prisma": "^6.0.1",
     "ts-node": "^10.9.2",
-    "tsup": "^8.5.0",
     "typescript": "^5.9.3",
-    "vite": "^6.4.0",
-    "wait-on": "^7.2.0"
+    "vite": "^6.4.0"
   }
 }

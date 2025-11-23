@@ -933,7 +933,8 @@ function cancelReturnEdit(id_adoption: number) {
 </script>
 
 <template>
-  <div class="page">
+  <div class="page page-scroll">
+    <div class="adoption-page">
     <div v-if="ui.error" class="banner error">{{ ui.error }}</div>
 
     <div class="metrics-grid">
@@ -1483,15 +1484,16 @@ function cancelReturnEdit(id_adoption: number) {
       </div>
       <div v-else class="empty">Aucune adoption.</div>
     </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.page {
+.adoption-page {
   display: grid;
   gap: 22px;
   padding: 24px;
-  background: linear-gradient(180deg, #f7faff 0%, #f1f3f9 100%);
+  min-width: 1024px;
 }
 .metrics-grid {
   display: grid;

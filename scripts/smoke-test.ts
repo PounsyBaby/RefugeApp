@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { randomUUID } from 'node:crypto';
-import prisma from '../electron/db/prisma';
+import prisma from '../src/main/db/prisma';
 
 async function assert(condition: boolean, message: string) {
   if (!condition) {

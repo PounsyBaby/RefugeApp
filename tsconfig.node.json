@@ -6,7 +6,7 @@
     "outDir": "dist-node"
   },
   "include": [
-    "electron/db/**/*.ts",
+    "src/main/db/**/*.ts",
     "scripts/**/*.ts"
   ]
 }

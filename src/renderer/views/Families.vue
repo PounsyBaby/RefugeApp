@@ -558,7 +558,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="page">
+  <div class="page families-page">
     <div v-if="ui.error" class="banner error">{{ ui.error }}</div>
 
     <div class="card">
@@ -907,21 +907,22 @@ onMounted(async () => {
   display: grid;
   gap: 20px;
   padding: 24px;
-  background: linear-gradient(180deg, #f8faff 0%, #f3f5fb 100%);
+  background: var(--page-bg);
+  color: var(--text-primary);
 }
 .card {
-  background: #fff;
-  border: 1px solid #e1e6f3;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
   border-radius: 20px;
   padding: 22px;
   display: grid;
   gap: 18px;
-  box-shadow: 0 24px 38px -28px rgba(15, 26, 60, 0.35);
+  box-shadow: var(--card-shadow);
 }
 h2 {
   margin: 0;
   font-size: 22px;
-  color: #1f2d4d;
+  color: var(--text-primary);
 }
 .form-grid {
   display: flex;
@@ -977,8 +978,8 @@ h2 {
   flex-wrap: wrap;
 }
 .metric {
-  background: #f6f8ff;
-  border: 1px solid #dce3ff;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
   border-radius: 12px;
   padding: 10px 14px;
   min-width: 100px;
@@ -987,12 +988,12 @@ h2 {
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #5f6c9b;
+  color: var(--muted);
 }
 .metric-value {
   font-size: 18px;
   font-weight: 600;
-  color: #1f2d4d;
+  color: var(--text-primary);
 }
 .planning-grid {
   display: grid;
@@ -1000,9 +1001,9 @@ h2 {
   gap: 18px;
 }
 .planning-col {
-  border: 1px solid #e2e7f4;
+  border: 1px solid var(--card-border);
   border-radius: 16px;
-  background: #f8faff;
+  background: var(--card-bg);
   padding: 14px;
   display: grid;
   gap: 10px;
@@ -1010,7 +1011,7 @@ h2 {
 .planning-col h3 {
   margin: 0;
   font-size: 16px;
-  color: #1f2d4d;
+  color: var(--text-primary);
 }
 .planning-list {
   list-style: none;
@@ -1020,8 +1021,8 @@ h2 {
   gap: 8px;
 }
 .planning-list li {
-  background: #ffffff;
-  border: 1px solid #e6ebf7;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
   border-radius: 12px;
   padding: 10px 12px;
 }
@@ -1050,9 +1051,9 @@ h2 {
   gap: 12px;
 }
 .match-list li {
-  border: 1px solid #e2e7f4;
+  border: 1px solid var(--card-border);
   border-radius: 16px;
-  background: #f8faff;
+  background: var(--card-bg);
   padding: 12px 14px;
   display: grid;
   gap: 6px;
@@ -1066,28 +1067,31 @@ h2 {
 .reason-list {
   margin: 0;
   padding-left: 18px;
-  color: #55608a;
+  color: var(--muted);
   font-size: 13px;
   display: grid;
   gap: 4px;
 }
 .tag.score {
-  background: #eef3ff;
-  border-color: #cdd8ff;
-  color: #2946c2;
+  background: #213054;
+  border-color: #5367a4;
+  color: #d5dfff;
 }
 .filters {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
+  color: var(--text-primary);
 }
 .filter-input,
 .filter-select {
-  border: 1px solid #d4daeb;
+  border: 1px solid var(--field-border);
   border-radius: 12px;
   padding: 8px 12px;
   font-size: 14px;
   min-width: 180px;
+  background: var(--field-bg);
+  color: var(--text-primary);
 }
 .filter-input:focus,
 .filter-select:focus {
@@ -1139,16 +1143,17 @@ h2 {
   font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
-  color: #647199;
+  color: var(--muted);
   letter-spacing: 0.05em;
 }
 .field input,
 .field select,
 .field textarea {
-  border: 1px solid #d4daeb;
+  border: 1px solid var(--field-border);
   border-radius: 12px;
   padding: 10px 12px;
-  background: #fff;
+  background: var(--field-bg);
+  color: var(--text-primary);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .field input:focus,
@@ -1163,9 +1168,9 @@ h2 {
   gap: 16px;
 }
 .family-item {
-  border: 1px solid #e2e7f4;
+  border: 1px solid var(--card-border);
   border-radius: 18px;
-  background: #ffffff;
+  background: var(--card-bg);
   overflow: hidden;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
@@ -1184,7 +1189,7 @@ h2 {
 .summary-main { display: flex; flex-direction: column; gap: 4px; width: 100%; }
 .summary-title {
   font-weight: 600;
-  color: #1f2d4d;
+  color: var(--text-primary);
   display: flex;
   align-items: center;
   gap: 10px;
@@ -1192,7 +1197,7 @@ h2 {
 }
 .summary-sub {
   font-size: 12px;
-  color: #6d779f;
+  color: var(--muted);
   display: flex;
   gap: 16px;
   flex-wrap: wrap;
@@ -1215,8 +1220,8 @@ h2 {
   min-height: 40px;
   padding: 10px 12px;
   border-radius: 12px;
-  border: 1px solid #e6e9f5;
-  background: #f9fbff;
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
 }
 .family-actions {
   display: grid;
@@ -1232,23 +1237,23 @@ h2 {
   flex: 1 1 200px;
 }
 .subcard {
-  border: 1px solid #e6eaf6;
+  border: 1px solid var(--card-border);
   border-radius: 16px;
   padding: 16px;
-  background: #f8faff;
+  background: var(--card-bg);
   display: grid;
   gap: 14px;
 }
 .subcard h3 {
   margin: 0;
   font-size: 18px;
-  color: #1f2d4d;
+  color: var(--text-primary);
 }
 .placement-form .field {
   flex: 1 1 220px;
 }
 .table-wrapper {
-  border: 1px solid #e2e7f4;
+  border: 1px solid var(--table-border);
   border-radius: 14px;
   overflow: hidden;
 }
@@ -1261,19 +1266,19 @@ h2 {
   min-width: 760px;
   border-collapse: collapse;
   font-size: 14px;
-  color: #1f2d4d;
+  color: var(--text-primary);
 }
 .table thead th {
   text-align: left;
   padding: 10px 12px;
-  background: #f2f5ff;
-  border-bottom: 1px solid #dfe4f3;
+  background: var(--table-header-bg);
+  border-bottom: 1px solid var(--table-border);
   font-weight: 600;
-  color: #56618b;
+  color: var(--muted);
 }
 .table tbody td {
   padding: 10px 12px;
-  border-bottom: 1px solid #eef1f9;
+  border-bottom: 1px solid var(--table-border);
   vertical-align: top;
 }
 .table tbody tr:last-child td { border-bottom: none; }
@@ -1286,27 +1291,27 @@ h2 {
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  border: 1px solid #cdd7ff;
-  background: #eef2ff;
-  color: #3051c7;
+  border: 1px solid #5b74d0;
+  background: #273862;
+  color: #9fb9ff;
 }
-.tag.status.active { background: #e8f7f0; color: #247146; border-color: #b7e5ca; }
-.tag.status.suspendue { background: #fff4e5; color: #a46112; border-color: #f9d3a7; }
-.tag.status.terminee { background: #f1f1f5; color: #5f667e; border-color: #dadbe5; }
+.tag.status.active { background: #143728; color: #7ee0a8; border-color: #388b64; }
+.tag.status.suspendue { background: #41250d; color: #ffb775; border-color: #a05f23; }
+.tag.status.terminee { background: #272a3b; color: #c6cce6; border-color: #555b7d; }
 .tag.warning {
-  background: #fff3e0;
-  color: #b25900;
-  border-color: #ffd7a2;
+  background: #3d250e;
+  color: #ffba72;
+  border-color: #9a5f1f;
 }
-.muted { color: #7a83a5; font-size: 12px; }
-.strong { font-weight: 600; color: #1f2d4d; }
+.muted { color: var(--muted); font-size: 12px; }
+.strong { font-weight: 600; color: var(--text-primary); }
 .empty {
   padding: 16px;
   text-align: center;
   border-radius: 14px;
-  background: #f5f7ff;
-  border: 1px dashed #cdd6f6;
-  color: #7b86a8;
+  background: var(--card-bg);
+  border: 1px dashed var(--card-border);
+  color: var(--muted);
   font-size: 14px;
 }
 @media (max-width: 900px) {

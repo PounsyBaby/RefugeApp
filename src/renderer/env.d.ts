@@ -1,7 +1,7 @@
 /// <reference types="vite/client" />
 
 import type { DefineComponent } from 'vue';
-import type { RendererApi } from '../electron/preload';
+import type { RendererApi } from '../shared/ipc';
 
 declare module '*.vue' {
   const component: DefineComponent<{}, {}, any>;

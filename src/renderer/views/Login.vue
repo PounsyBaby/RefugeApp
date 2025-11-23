@@ -56,12 +56,12 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.login-wrap { min-height: 100vh; display:flex; align-items:center; justify-content:center; background:#f6f7fb; }
-.card { width: 360px; background:#fff; border:1px solid #e7e7e7; border-radius:12px; padding:20px; box-shadow:0 2px 8px rgba(10,10,10,.05); display:grid; gap:10px; }
-h1 { margin:0 0 6px; font-size:20px; }
-label { font-size:12px; color:#555; }
-input { border:1px solid #cfcfcf; border-radius:8px; padding:10px; font-size:14px; background:#fafafa; }
+.login-wrap { min-height: 100vh; display:flex; align-items:center; justify-content:center; background:var(--page-flat-bg); }
+.card { width: 360px; background:var(--card-bg); border:1px solid var(--card-border); border-radius:12px; padding:20px; box-shadow:var(--card-shadow); display:grid; gap:10px; color:var(--text-primary); }
+h1 { margin:0 0 6px; font-size:20px; color:var(--text-primary); }
+label { font-size:12px; color:var(--field-label); }
+input { border:1px solid var(--field-border); border-radius:8px; padding:10px; font-size:14px; background:var(--field-bg); color:var(--text-primary); }
 .btn { background:#2f73ff; color:#fff; border:none; padding:10px 12px; border-radius:8px; cursor:pointer; font-size:14px; margin-top:6px; }
 .btn:disabled { opacity:.6; cursor:not-allowed; }
-.banner.error { background:#ffe8e8; color:#a90f0f; border:1px solid #ffc8c8; padding:8px 10px; border-radius:8px; }
+.banner.error { background:var(--banner-error-bg); color:var(--banner-error-color); border:1px solid var(--banner-error-border); padding:8px 10px; border-radius:8px; }
 </style>

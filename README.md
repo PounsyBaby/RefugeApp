@@ -16,7 +16,7 @@ Client lourd Electron + Vue 3 pour la gestion d’un refuge : personnes, animaux
 ## Installation
 
 ```bash
-cd refuge-pro-vue
+cd refugeapp
 npm install
 ```
 
@@ -55,7 +55,7 @@ Assurez-vous que la connexion MySQL fonctionne avant de lancer les scripts.
 
 ## Base de données & seeds
 
-1. **Initialiser le schéma** (exécute `electron/db/schema.sql`) :
+1. **Initialiser le schéma** (exécute `src/main/db/schema.sql`) :
 
    ```bash
    npm run db:setup
@@ -73,7 +73,7 @@ Assurez-vous que la connexion MySQL fonctionne avant de lancer les scripts.
    npm run seed:sample
    ```
 
-Ces scripts utilisent Prisma (`electron/db/seed-*.ts`). Ils peuvent être relancés sans casser les données : upsert sur les clés naturelles quand c’est possible.
+Ces scripts utilisent Prisma (`src/main/db/seed-*.ts`). Ils peuvent être relancés sans casser les données : upsert sur les clés naturelles quand c’est possible.
 
 ---
 
@@ -83,13 +83,11 @@ Ces scripts utilisent Prisma (`electron/db/seed-*.ts`). Ils peuvent être relanc
 npm run dev
 ```
 
-Cette commande lance :
+Cette commande est un alias de `electron-forge start` :
 
-- `npm:dev:renderer` – Vite (front Vue 3)
-- `npm:dev:main` – compilation TS → `dist-electron`
-- `npm:dev:electron` – instance Electron avec rechargement (throttle 1,2 s via `nodemon.json` pour éviter les redémarrages multiples pendant la recompilation)
-
-L’app s’ouvre automatiquement après que Vite soit prêt (port 5173).
+- le plugin Vite gère automatiquement le hot-reload du renderer, du preload et du process main ;
+- Electron Forge relance la fenêtre dès que le bundle main/preload change ;
+- Les logs renderer/main sont regroupés dans la console.
 
 ---
 
@@ -97,7 +95,9 @@ L’app s’ouvre automatiquement après que Vite soit prêt (port 5173).
 
 | Script           | Description |
 | ---------------- | ----------- |
-| `npm run build`  | Build production (renderer + main process) |
+| `npm run dev`    | Lance l’appli via Electron Forge (Vite en mode watch) |
+| `npm run build` / `npm run package` | Compile l’appli sans générer d’installeur (sortie dans `.vite/`) |
+| `npm run make`   | Génère les artefacts (Squirrel/Zip/Deb/RPM) via Forge |
 | `npm run lint`   | ESLint sur tout le projet |
 | `npm run test:smoke` | Vérification rapide : présence admin, création/suppression d’une demande d’adoption |
 
@@ -108,26 +108,31 @@ L’app s’ouvre automatiquement après que Vite soit prêt (port 5173).
 ## Structure principale
 
 ```
-electron/          # Process main & handlers IPC
-  db/              # Scripts DB (setup, seeds, client Prisma)
-  ipc/             # Modules métier (adoption, families, ...)
+src/
+  main/            # Process main, handlers IPC et accès Prisma
+    db/            # Scripts DB (setup, seeds, client Prisma)
+    ipc/           # Modules métier (adoption, familles, ...)
+    security/      # Hardening des sessions/contexts
+  preload/         # Pont contextBridge exposé au renderer
+  renderer/        # App Vue 3 (composants, vues, router)
+  shared/          # Types/interfaces partagés entre process
 prisma/            # schema.prisma, généré par Prisma
 scripts/           # Scripts utilitaires (smoke-test)
-src/               # Renderer Vue 3
-dist-electron/     # Code TS compilé pour Electron (généré)
+.vite/             # Sorties Vite (main, preload, renderer)
+out/               # Paquets générés par Electron Forge
 ```
 
-Tous les modules IPC (`electron/ipc/*.ts`) parlent désormais à Prisma (`electron/db/prisma.ts`).  
+Tous les modules IPC (`src/main/ipc/*.ts`) parlent désormais à Prisma (`src/main/db/prisma.ts`).  
 Aucun accès SQL brut n’est conservé.
 
-Les styles communs (`.page`, `.card`, `.btn`, `.banner`, `.table`, …) sont centralisés dans `src/style.css`. Les vues ne gardent désormais que leurs ajustements spécifiques ; réutilisez ces classes pour conserver une interface homogène.
+Les styles communs (`.page`, `.card`, `.btn`, `.banner`, `.table`, …) sont centralisés dans `src/renderer/style.css`. Les vues ne gardent désormais que leurs ajustements spécifiques ; réutilisez ces classes pour conserver une interface homogène.
 
 ---
 
 ## Notes de migration Prisma
 
-- Les scripts de seed et de test ont été convertis à Prisma (`electron/db/seed-admin.ts`, `electron/db/seed-sample.ts`, `scripts/smoke-test.ts`).
-- L’ancien helper `electron/db/repo.ts` (SQL brut) a été supprimé.
+- Les scripts de seed et de test ont été convertis à Prisma (`src/main/db/seed-admin.ts`, `src/main/db/seed-sample.ts`, `scripts/smoke-test.ts`).
+- L’ancien helper `src/main/db/repo.ts` (SQL brut) a été supprimé.
 - Les enums Prisma sont utilisés via leurs valeurs (ex. `type_personne: 'prospect'`), ce qui évite toute dépendance à `$Enums` côté scripts.
 
 ---
@@ -137,17 +142,16 @@ Les styles communs (`.page`, `.card`, `.btn`, `.banner`, `.table`, …) sont cen
 Pour générer l’application prête à empaqueter :
 
 ```bash
-npm run build
+npm run make
 ```
 
-La sortie se trouve dans `dist/` (renderer) et `dist-electron/` (main process compilé).  
-L’empaquetage Electron (makers) n’est pas fourni dans ce repo — à adapter selon votre outil (Electron Forge, Electron Builder, etc.).
+Les bundles intermédiaires sont produits dans `.vite/` (main, preload, renderer) et les artefacts (Squirrel/zip/deb/rpm) se retrouvent dans `out/`.
 
 ---
 
 ## Support / debug
 
-- Vérifier la console main (`dist-electron/main.js`) pour toute erreur IPC.
+- Vérifier la console main (bundle `.vite/build/main.js`) pour toute erreur IPC.
 - Prisma : `npx prisma studio` pour inspecter rapidement la base.
 - Tests rapides : `npm run test:smoke`.
 

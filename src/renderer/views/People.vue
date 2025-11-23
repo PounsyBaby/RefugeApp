@@ -394,7 +394,7 @@ onBeforeUnmount(() => {
 h2 {
   margin: 0;
   font-size: 20px;
-  color: #1f2a44;
+  color: var(--text-primary);
 }
 
 .grid-two {
@@ -438,9 +438,9 @@ h2 {
 }
 
 .table-wrapper {
-  border: 1px solid #e5eaf5;
+  border: 1px solid var(--table-border);
   border-radius: 16px;
-  box-shadow: inset 0 0 0 1px rgba(246, 248, 255, 0.6);
+  box-shadow: inset 0 0 0 1px rgba(246, 248, 255, 0.2);
 }
 
 .table-scroll {
@@ -450,19 +450,19 @@ h2 {
 
 .table {
   min-width: 1100px;
-  color: #1f2a44;
+  color: var(--table-text);
 }
 
 .table thead th {
   padding: 12px 14px;
-  background: #f4f6ff;
-  border-bottom: 1px solid #e2e8fb;
-  color: #495678;
+  background: var(--table-header-bg);
+  border-bottom: 1px solid var(--table-border);
+  color: var(--table-header-text);
 }
 
 .table tbody td {
   padding: 12px 14px;
-  border-bottom: 1px solid #eef1f9;
+  border-bottom: 1px solid var(--table-border);
   vertical-align: top;
 }
 
@@ -472,7 +472,7 @@ h2 {
 
 .strong {
   font-weight: 600;
-  color: #19203a;
+  color: var(--text-primary);
 }
 
 .caps {
@@ -483,16 +483,16 @@ h2 {
   padding: 16px;
   text-align: center;
   border-radius: 14px;
-  background: #f5f7ff;
-  border: 1px dashed #ccd6f6;
-  color: #7a85a9;
+  background: var(--page-bg);
+  border: 1px dashed var(--card-border);
+  color: var(--muted);
   font-size: 14px;
 }
 
 .banner.error {
-  background: #ffe6e9;
-  border: 1px solid #ffccd5;
-  color: #b42335;
+  background: var(--banner-error-bg);
+  border: 1px solid var(--banner-error-border);
+  color: var(--banner-error-color);
   padding: 10px 14px;
   border-radius: 12px;
   font-weight: 600;

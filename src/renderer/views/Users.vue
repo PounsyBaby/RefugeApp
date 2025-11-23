@@ -20,20 +20,21 @@ const highlightedUserId = ref<number | null>(null);
 const pendingUserScroll = ref<number | null>(null);
 let userHighlightTimer: ReturnType<typeof setTimeout> | null = null;
 
+const roleOptions: UserRow['role'][] = ['admin', 'agent', 'benevole', 'veto_ext'];
+const isAdmin = computed(() => session.state.user?.role === 'admin');
+const canCreateRoles = computed<UserRow['role'][]>(() => (isAdmin.value ? roleOptions : []));
+
 const form = reactive({
   nom: '',
   prenom: '',
   email: '',
   password: '',
   role: 'benevole' as UserRow['role'],
+  actif: true,
 });
 
-const canCreateRoles = computed<UserRow['role'][]>(() => {
-  const role = session.state.user?.role;
-  if (role === 'admin') return ['admin', 'agent', 'benevole', 'veto_ext'];
-  if (role === 'agent') return ['benevole'];
-  return [];
-});
+const editingUser = ref<UserRow | null>(null);
+const isEditing = computed(() => editingUser.value !== null);
 
 function resetError() {
   ui.error = '';
@@ -99,6 +100,7 @@ async function refresh() {
 }
 
 async function createUser() {
+  if (!isAdmin.value) return;
   resetError();
   const payload = {
     nom: form.nom.trim(),
@@ -106,28 +108,84 @@ async function createUser() {
     email: form.email.trim(),
     password: form.password,
     role: form.role,
+    actif: form.actif,
   };
   if (!payload.nom || !payload.prenom || !payload.email || !payload.password) {
     ui.error = 'Nom, prénom, email et mot de passe sont requis';
     return;
   }
-  if (!canCreateRoles.value.includes(payload.role)) {
-    ui.error = 'Rôle non autorisé avec votre profil';
-    return;
-  }
   const res = await safeInvoke('users:create', payload);
   if (res?.id_user) {
-    Object.assign(form, { nom: '', prenom: '', email: '', password: '', role: canCreateRoles.value[0] ?? 'benevole' });
+    resetForm();
     await refresh();
   }
 }
 
-onMounted(async () => {
-  await session.init();
-  if (canCreateRoles.value.length === 0) {
-    ui.error = 'Accès refusé';
+function resetForm() {
+  Object.assign(form, {
+    nom: '',
+    prenom: '',
+    email: '',
+    password: '',
+    role: canCreateRoles.value[0] ?? 'benevole',
+    actif: true,
+  });
+  editingUser.value = null;
+}
+
+function startEdit(user: UserRow) {
+  if (!isAdmin.value) return;
+  editingUser.value = user;
+  Object.assign(form, {
+    nom: user.nom,
+    prenom: user.prenom,
+    email: user.email,
+    password: '',
+    role: user.role,
+    actif: !!user.actif,
+  });
+}
+
+function cancelEdit() {
+  resetForm();
+}
+
+async function updateUser() {
+  if (!isAdmin.value || !editingUser.value) return;
+  resetError();
+  const payload: any = {
+    id_user: editingUser.value.id_user,
+    nom: form.nom.trim(),
+    prenom: form.prenom.trim(),
+    email: form.email.trim(),
+    role: form.role,
+    actif: form.actif,
+  };
+  if (!payload.nom || !payload.prenom || !payload.email) {
+    ui.error = 'Nom, prénom et email sont requis';
     return;
   }
+  if (form.password.trim()) {
+    payload.password = form.password;
+  }
+  await safeInvoke('users:update', payload);
+  resetForm();
+  await refresh();
+}
+
+async function deleteUser(user: UserRow) {
+  if (!isAdmin.value) return;
+  const confirmed = window.confirm(`Supprimer ${user.prenom} ${user.nom} ?`);
+  if (!confirmed) return;
+  await safeInvoke('users:delete', { id_user: user.id_user });
+  if (editingUser.value?.id_user === user.id_user) {
+    resetForm();
+  }
+  await refresh();
+}
+
+onMounted(async () => {
+  await session.init();
   form.role = canCreateRoles.value[0] ?? form.role;
   await refresh();
 });
@@ -150,8 +208,8 @@ onBeforeUnmount(() => {
   <div class="page">
     <div v-if="ui.error" class="banner error">{{ ui.error }}</div>
 
-    <div class="card">
-      <h2>Créer un utilisateur</h2>
+    <div v-if="isAdmin" class="card">
+      <h2>{{ isEditing ? 'Modifier un utilisateur' : 'Créer un utilisateur' }}</h2>
       <div class="grid three">
         <div class="field">
           <label>Nom</label>
@@ -166,21 +224,44 @@ onBeforeUnmount(() => {
           <input v-model="form.email" placeholder="utilisateur@example.com" type="email" />
         </div>
         <div class="field">
-          <label>Mot de passe</label>
-          <input v-model="form.password" type="password" placeholder="********" />
+          <label>{{ isEditing ? 'Nouveau mot de passe' : 'Mot de passe' }}</label>
+          <input
+            v-model="form.password"
+            type="password"
+            :placeholder="isEditing ? 'Laisser vide pour conserver' : '********'"
+          />
         </div>
         <div class="field">
           <label>Rôle</label>
-          <select v-model="form.role" :disabled="canCreateRoles.length <= 1">
+          <select v-model="form.role">
             <option v-for="role in canCreateRoles" :key="role" :value="role">
               {{ role }}
             </option>
           </select>
         </div>
+        <div class="field checkbox">
+          <label>
+            <input type="checkbox" v-model="form.actif" />
+            Actif
+          </label>
+        </div>
       </div>
       <div class="actions">
-        <button class="btn" @click="createUser" :disabled="ui.loading">Créer</button>
+        <template v-if="isEditing">
+          <button class="btn" @click="updateUser" :disabled="ui.loading">Mettre à jour</button>
+          <button class="btn ghost" type="button" @click="cancelEdit">Annuler</button>
+        </template>
+        <template v-else>
+          <button class="btn" @click="createUser" :disabled="ui.loading">Créer</button>
+        </template>
       </div>
+    </div>
+    <div v-else class="card notice-card">
+      <h2>Gestion des comptes</h2>
+      <p class="muted">
+        Seuls les administrateurs peuvent créer, modifier ou supprimer des utilisateurs.
+        Vous disposez d’un accès en lecture seule.
+      </p>
     </div>
 
     <div class="card">
@@ -196,6 +277,7 @@ onBeforeUnmount(() => {
               <th>Email</th>
               <th>Rôle</th>
               <th>Actif</th>
+              <th v-if="isAdmin">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -213,6 +295,10 @@ onBeforeUnmount(() => {
                 <span :class="['badge', user.actif ? 'badge-success' : 'badge-muted']">
                   {{ user.actif ? 'Oui' : 'Non' }}
                 </span>
+              </td>
+              <td v-if="isAdmin" class="actions-cell">
+                <button class="link-btn" type="button" @click="startEdit(user)">Modifier</button>
+                <button class="link-btn danger" type="button" @click="deleteUser(user)">Supprimer</button>
               </td>
             </tr>
           </tbody>
@@ -276,6 +362,7 @@ h2 {
 .actions {
   display: flex;
   justify-content: flex-end;
+  gap: 12px;
 }
 .btn {
   background: linear-gradient(135deg, #2f73ff, #5a8cff);
@@ -294,8 +381,14 @@ h2 {
 .btn:hover:enabled {
   transform: translateY(-1px);
 }
+.btn.ghost {
+  background: transparent;
+  color: #2f73ff;
+  border: 1px solid #d0dcff;
+  box-shadow: none;
+}
 .table-wrapper {
-  overflow: hidden;
+  overflow: auto;
   border: 1px solid #e5e9f6;
   border-radius: 16px;
 }
@@ -375,5 +468,32 @@ h2 {
   border: 1px dashed #d5dbef;
   background: #f6f8ff;
   color: #7c86a8;
+}
+.actions-cell {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.link-btn {
+  background: transparent;
+  border: none;
+  color: #2f73ff;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+.link-btn:hover {
+  text-decoration: underline;
+}
+.link-btn.danger {
+  color: #dc2626;
+}
+.notice-card {
+  background: rgba(255, 255, 255, 0.6);
+}
+.field.checkbox label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 </style>

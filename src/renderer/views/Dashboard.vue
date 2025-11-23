@@ -271,7 +271,8 @@ function medicalStatusLabel(item: MedicalReminder): string {
 </script>
 
 <template>
-  <div class="page dashboard">
+  <div class="page page-scroll">
+    <div class="dashboard">
     <div v-if="ui.error" class="banner error">{{ ui.error }}</div>
 
     <div class="search-card">
@@ -349,113 +350,120 @@ function medicalStatusLabel(item: MedicalReminder): string {
         <header>
           <h3>Adoptables récents</h3>
         </header>
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Nom</th>
-              <th>Espèce</th>
-              <th>Statut</th>
-              <th>Date arrivée</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="animal in recentAdoptables" :key="animal.id_animal">
-              <td>{{ animal.nom_usuel || '—' }}</td>
-              <td>{{ animal.espece_libelle }}</td>
-              <td><span class="tag">{{ animal.statut }}</span></td>
-              <td>{{ animal.date_arrivee || '—' }}</td>
-            </tr>
-            <tr v-if="recentAdoptables.length === 0">
-              <td colspan="4" class="muted">Aucun animal adoptable pour le moment.</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="table-wrapper">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Nom</th>
+                <th>Espèce</th>
+                <th>Statut</th>
+                <th>Date arrivée</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="animal in recentAdoptables" :key="animal.id_animal">
+                <td>{{ animal.nom_usuel || '—' }}</td>
+                <td>{{ animal.espece_libelle }}</td>
+                <td><span class="tag">{{ animal.statut }}</span></td>
+                <td>{{ animal.date_arrivee || '—' }}</td>
+              </tr>
+              <tr v-if="recentAdoptables.length === 0">
+                <td colspan="4" class="muted">Aucun animal adoptable pour le moment.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <div class="panel">
         <header>
           <h3>Demandes à traiter</h3>
         </header>
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Demande</th>
-              <th>Date dépôt</th>
-              <th>Statut</th>
-              <th>Animaux</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="demande in demandesOuvertes" :key="demande.id_demande">
-              <td>{{ demande.nom }} {{ demande.prenom }}</td>
-              <td>{{ demande.date_depot }}</td>
-              <td><span class="tag">{{ demande.statut }}</span></td>
-              <td>{{ demande.nb_animaux }}</td>
-            </tr>
-            <tr v-if="demandesOuvertes.length === 0">
-              <td colspan="4" class="muted">Aucune demande en file.</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="table-wrapper">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Demande</th>
+                <th>Date dépôt</th>
+                <th>Statut</th>
+                <th>Animaux</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="demande in demandesOuvertes" :key="demande.id_demande">
+                <td>{{ demande.nom }} {{ demande.prenom }}</td>
+                <td>{{ demande.date_depot }}</td>
+                <td><span class="tag">{{ demande.statut }}</span></td>
+                <td>{{ demande.nb_animaux }}</td>
+              </tr>
+              <tr v-if="demandesOuvertes.length === 0">
+                <td colspan="4" class="muted">Aucune demande en file.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <div class="panel">
         <header>
           <h3>Suivi santé</h3>
         </header>
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Acte</th>
-              <th>Animal</th>
-              <th>Validité</th>
-              <th>Statut</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="item in medicalUpcoming" :key="item.id_evt">
-              <td>
-                <div class="strong">{{ item.type }}</div>
-                <div class="muted">{{ item.sous_type || '—' }}</div>
-              </td>
-              <td>
-                <div>{{ item.animal_nom || ('Animal #' + item.id_animal) }}</div>
-                <div class="muted">{{ item.espece_libelle || '' }}</div>
-              </td>
-              <td>{{ formatDateDisplay(item.date_validite) }}</td>
-              <td>
-                <span class="status-chip" :class="{
-                  overdue: item.is_expired,
-                  soon: !item.is_expired && (item.days_until_due ?? 999) <= 7
-                }">
-                  {{ medicalStatusLabel(item) }}
-                </span>
-              </td>
-            </tr>
-            <tr v-if="medicalUpcoming.length === 0">
-              <td colspan="4" class="muted">Aucun rappel dans les 30 prochains jours.</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="table-wrapper">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Acte</th>
+                <th>Animal</th>
+                <th>Validité</th>
+                <th>Statut</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="item in medicalUpcoming" :key="item.id_evt">
+                <td>
+                  <div class="strong">{{ item.type }}</div>
+                  <div class="muted">{{ item.sous_type || '—' }}</div>
+                </td>
+                <td>
+                  <div>{{ item.animal_nom || ('Animal #' + item.id_animal) }}</div>
+                  <div class="muted">{{ item.espece_libelle || '' }}</div>
+                </td>
+                <td>{{ formatDateDisplay(item.date_validite) }}</td>
+                <td>
+                  <span class="status-chip" :class="{
+                    overdue: item.is_expired,
+                    soon: !item.is_expired && (item.days_until_due ?? 999) <= 7
+                  }">
+                    {{ medicalStatusLabel(item) }}
+                  </span>
+                </td>
+              </tr>
+              <tr v-if="medicalUpcoming.length === 0">
+                <td colspan="4" class="muted">Aucun rappel dans les 30 prochains jours.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
+    </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.dashboard{display:grid;gap:24px;padding-bottom:30px}
-.search-card{background:#fff;border:1px solid #e7eaf3;border-radius:14px;padding:18px;box-shadow:0 2px 6px rgba(14,32,68,0.05);display:grid;gap:12px}
+.dashboard{display:grid;gap:24px;padding-bottom:30px;min-width:1024px}
+.search-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:14px;padding:18px;box-shadow:var(--card-shadow);display:grid;gap:12px;color:var(--text-primary)}
 .search-header{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
 .search-input{position:relative;flex:1 1 320px}
-.search-input input{width:100%;padding:10px 36px 10px 14px;border:1px solid #d6dcef;border-radius:10px;font-size:14px;background:#fdfdff;transition:border-color .2s ease,box-shadow .2s ease}
+.search-input input{width:100%;padding:10px 36px 10px 14px;border:1px solid var(--field-border);border-radius:10px;font-size:14px;background:var(--field-bg);color:var(--text-primary);transition:border-color .2s ease,box-shadow .2s ease}
 .search-input input:focus{border-color:#2f73ff;box-shadow:0 0 0 3px rgba(47,115,255,.18);outline:none}
-.search-clear{position:absolute;top:50%;right:10px;transform:translateY(-50%);border:none;background:transparent;font-size:18px;line-height:1;color:#5b6c94;cursor:pointer}
-.search-status{min-width:160px;font-size:13px;color:#5b6c94}
+.search-clear{position:absolute;top:50%;right:10px;transform:translateY(-50%);border:none;background:transparent;font-size:18px;line-height:1;color:var(--muted);cursor:pointer}
+.search-status{min-width:160px;font-size:13px;color:var(--muted)}
 .search-card .muted{padding:0;text-align:left}
 .search-error{color:#b00020;font-size:13px}
 .search-results{list-style:none;margin:0;padding:0;display:grid;gap:8px}
 .search-result{margin:0}
-.search-result-btn{width:100%;display:flex;align-items:flex-start;gap:14px;border:1px solid #e4e9f7;border-radius:12px;padding:10px 14px;background:#f9fbff;font-size:13px;text-align:left;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease,border-color .2s ease}
+.search-result-btn{width:100%;display:flex;align-items:flex-start;gap:14px;border:1px solid var(--card-border);border-radius:12px;padding:10px 14px;background:var(--page-bg);font-size:13px;text-align:left;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease,border-color .2s ease;color:var(--text-primary)}
 .search-result-btn:hover{transform:translateY(-1px);box-shadow:0 8px 18px -14px rgba(47,115,255,.6);border-color:#cdd8ff}
 .search-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;font-size:11px;text-transform:uppercase;letter-spacing:.05em;font-weight:600}
 .search-badge.badge-animal{background:#eef6ff;color:#2457c6;border:1px solid #c6dcff}
@@ -463,25 +471,25 @@ function medicalStatusLabel(item: MedicalReminder): string {
 .search-badge.badge-user{background:#f1fbf3;color:#2c7a4b;border:1px solid #c4e6cf}
 .search-badge.badge-adoption{background:#fff7eb;color:#a6631b;border:1px solid #f3d3a4}
 .search-main{display:flex;flex-direction:column;gap:4px}
-.search-main .title{font-weight:600;color:#1d2a4d;font-size:14px}
-.search-main .subtitle{color:#5b6c94;font-size:12px}
+.search-main .title{font-weight:600;color:var(--text-primary);font-size:14px}
+.search-main .subtitle{color:var(--muted);font-size:12px}
 .metrics{display:grid;grid-template-columns: repeat(auto-fit, minmax(220px,1fr));gap:16px}
-.metric-card{background:#fff;border:1px solid #e7eaf3;border-radius:14px;padding:18px;box-shadow:0 2px 6px rgba(14,32,68,0.05);display:flex;flex-direction:column;gap:8px}
-.metric-label{font-size:13px;color:#5b6c94;text-transform:uppercase;letter-spacing:.08em}
-.metric-value{font-size:30px;font-weight:700;color:#1d2a4d}
-.metric-sub{font-size:13px;color:#6b7b9b}
-.metric-list{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:13px;color:#33415c}
+.metric-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:14px;padding:18px;box-shadow:var(--card-shadow);display:flex;flex-direction:column;gap:8px;color:var(--text-primary)}
+.metric-label{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.metric-value{font-size:30px;font-weight:700;color:var(--text-primary)}
+.metric-sub{font-size:13px;color:var(--muted)}
+.metric-list{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:13px;color:var(--text-primary)}
 .metric-list li{display:flex;align-items:center;justify-content:space-between}
-.tag{display:inline-block;padding:2px 8px;border-radius:999px;background:#edf2ff;color:#3351a6;font-size:12px;text-transform:uppercase;letter-spacing:.05em}
-.muted{color:#8a94ad;font-size:13px;text-align:center;padding:14px 0}
+.tag{display:inline-block;padding:2px 8px;border-radius:999px;background:var(--chip-bg);color:var(--chip-text);font-size:12px;text-transform:uppercase;letter-spacing:.05em}
+.muted{color:var(--muted);font-size:13px;text-align:center;padding:14px 0}
 .panels{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:20px}
-.panel{background:#fff;border:1px solid #e7eaf3;border-radius:14px;box-shadow:0 2px 6px rgba(14,32,68,0.05);overflow:hidden;display:flex;flex-direction:column}
-.panel header{padding:16px 18px;border-bottom:1px solid #eef1f8}
-.panel h3{margin:0;font-size:18px;color:#1d2a4d}
+.panel{background:var(--card-bg);border:1px solid var(--card-border);border-radius:14px;box-shadow:var(--card-shadow);overflow:hidden;display:flex;flex-direction:column;color:var(--text-primary)}
+.panel header{padding:16px 18px;border-bottom:1px solid var(--table-border)}
+.panel h3{margin:0;font-size:18px;color:var(--text-primary)}
 .table{width:100%;border-collapse:collapse;font-size:13px}
-.table th,.table td{padding:10px 14px;border-bottom:1px solid #eef1f8;text-align:left}
+.table th,.table td{padding:10px 14px;border-bottom:1px solid var(--table-border);text-align:left}
 .table tbody tr:last-child td{border-bottom:none}
-.banner.error{background:#ffe8e8;color:#a90f0f;border:1px solid #ffc8c8;padding:10px 14px;border-radius:10px}
+.banner.error{background:var(--banner-error-bg);color:var(--banner-error-color);border:1px solid var(--banner-error-border);padding:10px 14px;border-radius:10px}
 .status-chip{display:inline-flex;align-items:center;gap:6px;padding:2px 10px;border-radius:999px;background:#e8f5e9;color:#256029;font-size:11px;text-transform:uppercase;letter-spacing:.05em}
 .status-chip.soon{background:#fff4e5;color:#b05a00}
 .status-chip.overdue{background:#ffe7e7;color:#b71c1c}

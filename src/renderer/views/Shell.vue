@@ -2,10 +2,12 @@
 import { computed, onMounted } from 'vue';
 import { useRoute, useRouter, RouterLink } from 'vue-router';
 import { useSession } from '../composables/session';
+import { useTheme } from '../composables/theme';
 
 const route = useRoute();
 const router = useRouter();
 const session = useSession();
+const theme = useTheme();
 
 const baseItems: Array<{ to: string; label: string; icon: string; roles?: string[] }> = [
   { to: '/app/dashboard', label: 'Tableau de bord', icon: '📊' },
@@ -34,13 +36,20 @@ const userDisplay = computed(() => {
   return u.email;
 });
 
+const isDark = computed(() => theme.state.theme === 'dark');
+
 onMounted(async () => {
   await session.init({ force: true });
+  theme.init();
 });
 
 async function logout() {
   await session.logout();
   router.replace('/login');
+}
+
+function toggleTheme() {
+  theme.toggleTheme();
 }
 </script>
 
@@ -62,7 +71,11 @@ async function logout() {
           <span>{{ it.label }}</span>
         </RouterLink>
       </nav>
-      <div style="margin-top:auto;">
+      <div class="sidebar-footer">
+        <button class="menu-item ghost" @click="toggleTheme">
+          <span class="icon">{{ isDark ? '🌙' : '☀️' }}</span>
+          <span>{{ isDark ? 'Mode sombre' : 'Mode clair' }}</span>
+        </button>
         <button class="menu-item ghost" @click="logout">
           <span class="icon">🚪</span><span>Déconnexion</span>
         </button>
@@ -75,18 +88,19 @@ async function logout() {
 </template>
 
 <style scoped>
-.layout{display:grid;grid-template-columns:220px 1fr;height:100vh;background:#f6f7fb}
-.sidebar{background:#fff;border-right:1px solid #e9e9e9;display:flex;flex-direction:column;gap:8px;padding:14px}
+.layout{display:grid;grid-template-columns:220px 1fr;height:100vh;background:var(--layout-bg)}
+.sidebar{background:var(--sidebar-bg);border-right:1px solid var(--sidebar-border);display:flex;flex-direction:column;gap:8px;padding:14px;color:var(--sidebar-text)}
 .brand{display:flex;align-items:center;gap:10px;padding:8px;border-radius:10px}
-.logo{font-size:22px}.title{font-weight:700;color:#1d1d1f}
-.user{padding:8px 8px 4px;border-radius:10px;background:#f6f8ff;border:1px solid #e2e6ff;display:flex;flex-direction:column;gap:2px}
-.user-name{font-weight:600;color:#1f1f2e}
-.user-role{text-transform:uppercase;font-size:11px;letter-spacing:0.08em;color:#6170a1}
+.logo{font-size:22px}.title{font-weight:700;color:var(--sidebar-heading)}
+.user{padding:8px 8px 4px;border-radius:10px;background:var(--user-card-bg);border:1px solid var(--user-card-border);display:flex;flex-direction:column;gap:2px}
+.user-name{font-weight:600;color:var(--user-name)}
+.user-role{text-transform:uppercase;font-size:11px;letter-spacing:0.08em;color:var(--user-role)}
 .menu{display:grid;gap:6px;margin-top:6px}
-.menu-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;color:#222;text-decoration:none;font-weight:500}
-.menu-item:hover{background:#f0f4ff}
-.menu-item.active{background:#e8efff;color:#1c4dff;border:1px solid #d6e2ff}
-.menu-item.ghost{width:100%;text-align:left;background:transparent;border:1px solid #e8e8e8;cursor:pointer}
+.menu-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;color:var(--sidebar-text);text-decoration:none;font-weight:500;border:1px solid transparent;background:transparent}
+.menu-item:hover{background:var(--sidebar-hover)}
+.menu-item.active{background:var(--sidebar-active-bg);color:var(--sidebar-active-color);border:1px solid var(--sidebar-active-border)}
+.menu-item.ghost{width:100%;text-align:left;background:transparent;border:1px solid var(--sidebar-ghost-border);cursor:pointer}
 .icon{width:22px;text-align:center}
-.content{height:100vh;overflow:auto}
+.content{height:100vh;overflow:auto;background:var(--layout-bg)}
+.sidebar-footer{display:grid;gap:8px;margin-top:auto}
 </style>

@@ -1500,22 +1500,22 @@ onBeforeUnmount(() => {
 h2 {
   margin: 0;
   font-size: 20px;
-  color: #1e2b4a;
+  color: var(--text-primary);
 }
 .inline-link {
   display: inline-block;
   margin-top: 6px;
   font-size: 12px;
-  color: #2f73ff;
+  color: var(--link-color);
   text-decoration: underline;
 }
 .empty {
   padding: 16px;
   text-align: center;
   border-radius: 14px;
-  background: #f5f7ff;
-  border: 1px dashed #d2daf3;
-  color: #7f8aa9;
+  background: var(--page-bg);
+  border: 1px dashed var(--card-border);
+  color: var(--muted);
   font-size: 14px;
 }
 .list-controls {
@@ -1550,7 +1550,7 @@ h2 {
 .section-title {
   margin: 0 0 4px;
   font-size: 16px;
-  color: #23335e;
+  color: var(--text-primary);
 }
 .status-cell {
   display: flex;
@@ -1589,10 +1589,11 @@ h2 {
 }
 .vet-cell select {
   width: 100%;
-  border: 1px solid #d5dbea;
+  border: 1px solid var(--field-border);
   border-radius: 10px;
   padding: 6px 10px;
-  background: #fff;
+  background: var(--field-bg);
+  color: var(--text-primary);
 }
 .vet-cell .muted.small {
   margin-top: 4px;
