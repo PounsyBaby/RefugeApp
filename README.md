@@ -1,158 +1,108 @@
 # Refuge Animalier Pro
 
-Client lourd Electron + Vue 3 pour la gestion d’un refuge : personnes, animaux, adoptions, familles d’accueil, santé…  
+Client lourd Electron + Vue 3 + TypeScript + MySQL. Application desktop pour gérer un refuge (personnes, animaux, adoptions, familles d’accueil, santé…).
+
+---
+
+## Aperçu rapide (nouvelle machine)
+
+```bash
+git clone .../refugeapp
+cd refugeapp
+cp .env.example .env   # compléter les secrets et l’URL MySQL
+npm install            # installe les deps + prisma generate
+npm run db:setup       # crée le schéma
+npm run seed:admin     # crée l’admin de démo
+npm run seed:sample    # données d’exemple
+npm run dev            # lance l’app Electron en watch
+```
 
 ---
 
 ## Prérequis
 
-- **Node.js** ≥ 18 (développé avec Node 20)
-- **npm** (ou pnpm/yarn si adapté)
-- **MySQL** ≥ 8.0
-- Une base dédiée (par défaut `refuge`)
-
----
-
-## Installation
-
-```bash
-cd refugeapp
-npm install
-```
-
-Les modules Prisma sont générés automatiquement via le `postinstall`.  
-Si besoin, régénérer manuellement :
-
-```bash
-npm run prisma:generate
-```
+- **Node.js ≥ 18** (développé/testé en **20.x**). Sur macOS : `nvm use 20` recommandé.
+- **npm** (10+) ou équivalent.
+- **MySQL ≥ 8.0** accessible localement ou via réseau.
+- Accès disque en écriture pour `.vite/`, `out/` et la base.
 
 ---
 
 ## Configuration
 
-1. Copier le modèle `.env.example` :
+Modèle : `.env.example` → `.env`.
 
-   ```bash
-   cp .env.example .env
-   ```
+| Variable                    | Description |
+| --------------------------- | ----------- |
+| `DATABASE_URL`              | URL Prisma `mysql://user:pass@host:port/db` |
+| `JWT_SECRET`                | Secret JWT pour la session |
+| `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` | Identifiants de l’admin de démo |
 
-2. Ajuster les variables :
-
-   | Variable              | Description                                     |
-   | --------------------- | ----------------------------------------------- |
-   | `MYSQL_HOST`          | Hôte MySQL                                      |
-   | `MYSQL_PORT`          | Port MySQL                                      |
-   | `MYSQL_USER`/`PASSWORD` | Identifiants MySQL                           |
-   | `MYSQL_DB`            | Base utilisée par Prisma et les scripts         |
-   | `DATABASE_URL`        | URL complète pour Prisma (`mysql://…`)          |
-   | `JWT_SECRET`          | Secret JWT pour l’authentification              |
-   | `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` | Identifiants du compte admin de démonstration |
-
-Assurez-vous que la connexion MySQL fonctionne avant de lancer les scripts.
-
----
-
-## Base de données & seeds
-
-1. **Initialiser le schéma** (exécute `src/main/db/schema.sql`) :
-
-   ```bash
-   npm run db:setup
-   ```
-
-2. **Créer l’admin de démo** :
-
-   ```bash
-   npm run seed:admin
-   ```
-
-3. **Insérer des données d’exemple** (espèces, animaux, demandes, etc.) :
-
-   ```bash
-   npm run seed:sample
-   ```
-
-Ces scripts utilisent Prisma (`src/main/db/seed-*.ts`). Ils peuvent être relancés sans casser les données : upsert sur les clés naturelles quand c’est possible.
-
----
-
-## Lancer l’application en développement
-
-```bash
-npm run dev
-```
-
-Cette commande est un alias de `electron-forge start` :
-
-- le plugin Vite gère automatiquement le hot-reload du renderer, du preload et du process main ;
-- Electron Forge relance la fenêtre dès que le bundle main/preload change ;
-- Les logs renderer/main sont regroupés dans la console.
+> Assurez-vous que la base MySQL ciblée existe et que l’utilisateur a les droits (CREATE/ALTER/INSERT).
 
 ---
 
 ## Scripts utiles
 
-| Script           | Description |
-| ---------------- | ----------- |
-| `npm run dev`    | Lance l’appli via Electron Forge (Vite en mode watch) |
-| `npm run build` / `npm run package` | Compile l’appli sans générer d’installeur (sortie dans `.vite/`) |
-| `npm run make`   | Génère les artefacts (Squirrel/Zip/Deb/RPM) via Forge |
-| `npm run lint`   | ESLint sur tout le projet |
-| `npm run test:smoke` | Vérification rapide : présence admin, création/suppression d’une demande d’adoption |
+| Script | Usage |
+| ------ | ----- |
+| `npm run dev` | Démarre l’app via Electron Forge + Vite en watch |
+| `npm run build` / `npm run package` | Compile sans créer d’installeur (sorties dans `.vite/`) |
+| `npm run make` | Génère les artefacts (Squirrel/Zip/Deb/RPM) dans `out/` |
+| `npm run db:setup` | Applique le schéma SQL (Prisma) |
+| `npm run seed:admin` | Crée l’admin de démo |
+| `npm run seed:sample` | Données d’exemple (espèces, animaux…) |
+| `npm run prisma:generate` | Régénère le client Prisma (déjà fait en `postinstall`) |
+| `npm run lint` | ESLint |
+| `npm run test:smoke` | Vérifie qu’on peut créer/supprimer une demande d’adoption |
 
-> `test:smoke`, `seed:admin` et `seed:sample` utilisent `ts-node` avec `tsconfig.node.json`. Assurez-vous que MySQL tourne et que les variables d’environnement sont correctes avant exécution.
+Les scripts `seed:*` et `test:smoke` utilisent `ts-node` avec `tsconfig.node.json`.
 
 ---
 
-## Structure principale
+## Structure
 
 ```
 src/
-  main/            # Process main, handlers IPC et accès Prisma
-    db/            # Scripts DB (setup, seeds, client Prisma)
-    ipc/           # Modules métier (adoption, familles, ...)
-    security/      # Hardening des sessions/contexts
-  preload/         # Pont contextBridge exposé au renderer
-  renderer/        # App Vue 3 (composants, vues, router)
-  shared/          # Types/interfaces partagés entre process
-prisma/            # schema.prisma, généré par Prisma
-scripts/           # Scripts utilitaires (smoke-test)
-.vite/             # Sorties Vite (main, preload, renderer)
-out/               # Paquets générés par Electron Forge
+  main/          # Process main, IPC, Prisma
+    db/          # Prisma client, setup, seeds
+    ipc/         # Cas métiers (adoption, familles, santé…)
+    security/    # Hardening fenêtre/session
+  preload/       # bridge exposé au renderer
+  renderer/      # Vue 3, router, vues
+  shared/        # Types partagés
+prisma/          # schema.prisma (génère .prisma/client)
+scripts/         # utilitaires (smoke-test)
 ```
 
-Tous les modules IPC (`src/main/ipc/*.ts`) parlent désormais à Prisma (`src/main/db/prisma.ts`).  
-Aucun accès SQL brut n’est conservé.
-
-Les styles communs (`.page`, `.card`, `.btn`, `.banner`, `.table`, …) sont centralisés dans `src/renderer/style.css`. Les vues ne gardent désormais que leurs ajustements spécifiques ; réutilisez ces classes pour conserver une interface homogène.
-
 ---
 
-## Notes de migration Prisma
-
-- Les scripts de seed et de test ont été convertis à Prisma (`src/main/db/seed-admin.ts`, `src/main/db/seed-sample.ts`, `scripts/smoke-test.ts`).
-- L’ancien helper `src/main/db/repo.ts` (SQL brut) a été supprimé.
-- Les enums Prisma sont utilisés via leurs valeurs (ex. `type_personne: 'prospect'`), ce qui évite toute dépendance à `$Enums` côté scripts.
-
----
-
-## Déploiement / build
-
-Pour générer l’application prête à empaqueter :
+## Build / packaging
 
 ```bash
 npm run make
 ```
 
-Les bundles intermédiaires sont produits dans `.vite/` (main, preload, renderer) et les artefacts (Squirrel/zip/deb/rpm) se retrouvent dans `out/`.
+Les bundles intermédiaires sont dans `.vite/`; les artefacts finaux dans `out/`.
 
 ---
 
-## Support / debug
+## Dépannage (problèmes fréquents)
 
-- Vérifier la console main (bundle `.vite/build/main.js`) pour toute erreur IPC.
-- Prisma : `npx prisma studio` pour inspecter rapidement la base.
-- Tests rapides : `npm run test:smoke`.
+- **`Cannot find module 'vue-router'` ou écran blanc** : `vue-router@^4` est une dépendance directe du renderer. Vérifier que l’installation s’est bien faite (`npm install` à la racine). Si besoin : `npm install vue-router@4` puis relancer `npm run dev`.
+- **Version de Node incompatible** (erreurs Vite/Electron ou Prisma engine) : utiliser Node 20 LTS (`nvm use 20`). Supprimer `node_modules` si nécessaire puis réinstaller.
+- **MySQL inaccessible** (`ECONNREFUSED`, `ER_ACCESS_DENIED_ERROR`, `CLIENT_UNSUPPORTED_AUTH`) : vérifier `DATABASE_URL`, que MySQL écoute sur le bon host/port et que l’utilisateur possède les droits. Sur macOS avec MySQL 8, préférer l’auth `mysql_native_password` pour l’utilisateur utilisé.
+- **Prisma ne se génère pas** (`Binary for current platform not found`) : `npm run prisma:generate` après avoir vidé `node_modules`; vérifier que le poste a accès au réseau pour télécharger les engines Prisma lors de la première install.
+- **Electron Forge ne démarre pas** : s’assurer que `npm run dev` est lancé depuis la racine, que `node_modules/.bin/electron` existe, et qu’aucun port critique n’est occupé.
+- **Base non initialisée** : toujours lancer `npm run db:setup` puis `npm run seed:admin` avant les tests ou la démo. `test:smoke` suppose ces données présentes.
+
+---
+
+## Support rapide
+
+- Logs main/preload : console du terminal qui lance `npm run dev`.
+- Logs renderer : devtools Electron (`Cmd+Opt+I` sur macOS).
+- Inspection de la base : `npx prisma studio`.
+- Santé minimale : `npm run test:smoke`.
 
 ---
